@@ -22,8 +22,6 @@ class KMeans(object):
 
     parameters
     ----------
-    X: array
-        [N, ra, dec] array
     centers_guess: array, optional
         optional [ncen, ra, dec] starting guesses.  Can set later
         with set_centers()
@@ -90,6 +88,8 @@ class KMeans(object):
 
         parameters
         ----------
+        X: array
+            [N, ra, dec] array
         maxiter: int, optional
             Max number of iterations to run.
         """
