@@ -22,9 +22,8 @@ class KMeans(object):
 
     parameters
     ----------
-    centers_guess: array, optional
-        optional [ncen, ra, dec] starting guesses.  Can set later
-        with set_centers()
+    centers_guess: array
+        [ncen, ra, dec] starting guesses.  Can reset later with set_centers()
     tol: float, optional
         The relative change in the average distance to
         centers, signifies convergence
