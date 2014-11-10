@@ -26,7 +26,7 @@ km = kmeans_sample(X, ncen, maxiter=100, tol=1.0e-5)
 print("found centers:",km.centers)
 
 # did we converge?
-print("converged?",self.converged)
+print("converged?",km.converged)
 
 # labels are the index to the nearest center for each point in X
 print("labels size:",km.labels.size)
