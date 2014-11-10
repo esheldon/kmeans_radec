@@ -32,7 +32,7 @@ print("converged?",self.converged)
 # the index to the nearest center for each point in X
 print("labels size:",km.labels.size)
 
-# how many in each label? Should be fairly uniform
+# how many in each cluster? Should be fairly uniform
 print("cluster sizes:", numpy.bincount(km.labels))
 
 # the distance to each center [Npoints, Ncen]
@@ -58,9 +58,9 @@ if not km.converged:
     km.set_centers(cen_guess2)
     km.run(X, maxiter=100)
 
-# once we have our centers, we can find which cluster 
-# a *different* set of points belongs, for example a set
-# of random points
+# once we have our centers, we can identify to which cluster 
+# a *different* set of points belong.  This could be a set
+# of random points we want to associate with the same regions
 
 labels=km.find_nearest(X2)
 
