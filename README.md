@@ -28,7 +28,7 @@ print("found centers:",km.centers)
 # did we converge?
 print("converged?",self.converged)
 
-# the index to the nearest center for each point in X
+# labels are the index to the nearest center for each point in X
 print("labels size:",km.labels.size)
 
 # how many in each cluster? Should be fairly uniform
