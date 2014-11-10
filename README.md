@@ -68,6 +68,16 @@ labels=km.find_nearest(X2)
 labels=kmeans_radec.find_nearest(X2, km.centers)
 ```
 
+installation
+------------
+
+git clone https://github.com/esheldon/kmeans_radec.git
+cd kmeans_radec
+python setup.py install
+
+# or in a user-defined prefix
+python setup.py install --prefix=/some/path
+
 dependencies
 ------------
 numpy
