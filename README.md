@@ -10,24 +10,23 @@ examples
 import kmeans_radec
 from kmeans_radec import KMeans, kmeans_sample
 
-# first lets to an easy example, letting the code generate
+# first lets try an easy example, letting the code generate
 # an initial set of guesses for the centers
 
-
-# our data X has shape [Npoints, ra, dec]
 
 # find 40 centers
 ncen = 40
 
+# the data X has shape [Npoints, ra, dec]
 km = kmeans_sample(X, ncen, maxiter=100, tol=1.0e-5)
 
-# we got back a KMeans object.
+# we got back a KMeans object:
 
 # the centers found by the algorithm
 print("found centers:",km.centers)
 
 # did we converge?
-print("converged:?",self.converged)
+print("converged?",self.converged)
 
 # the index to the nearest center for each point in X
 print("labels size:",km.labels.size)
@@ -60,7 +59,7 @@ if km.converged:
 
 else:
 
-    # no convergence, we could run some more by just running more
+    # no convergence, we could just run more
     #     km.run(maxiter=maxiter)
     # or we could try a different set of center guesses...
 
