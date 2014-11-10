@@ -43,6 +43,9 @@ print("shape of distances:",km.distances.shape)
 # start with our own guess
 #
 
+cen_guess=numpy.zeros(ncen, 2)
+cen_guess[:,0] = ra_guesses
+cen_guess[:,1] = dec_guesses
 km=KMeans(cen_guess)
 
 # run the algorithem
@@ -64,8 +67,13 @@ if not km.converged:
 
 labels=km.find_nearest(X2)
 
+# you can save the centers and load them into a KMeans
+# object later
+km=KMeans(centers)
+labels=km.find_nearest(X)
+
 # the above is equivalent to the simple function call
-labels=kmeans_radec.find_nearest(X2, km.centers)
+labels=kmeans_radec.find_nearest(X, centers)
 ```
 
 installation

@@ -50,27 +50,36 @@ class KMeans(object):
     import kmeans_radec
     from kmeans_radec import KMeans
 
+    cen_guess=numpy.zeros(ncen, 2)
+    cen_guess[:,0] = ra_guesses
+    cen_guess[:,1] = dec_guesses
     km=KMeans(cen_guess)
     km.run(X, maxiter=100)
 
-    if km.converged:
-        print("k means converged to :",km.centers)
+    # did it converge?
+    if not km.converged:
+        # did not converge.  This might be ok, but if we want
+        # to run more we can
+        km.run(maxiter=maxiter)
 
-        # find nearest centers to a different set of points
-        labels=km.find_nearest(X2)
-
-        # could also use
-        labels=kmeans_radec.find_nearest(X2, km.centers)
-
-    else:
-
-        print("k means did not converge, trying different guesses")
+        # or we could try a different set of center guesses...
         km.set_centers(cen_guess2)
         km.run(X, maxiter=100)
-        # ... etc.
 
+    # results are saved in attributes
     print(km.centers, km.labels, km.distances)
     print("copy of centers:",km.get_centers())
+
+    # once we have our centers, we can identify to which cluster 
+    # a *different* set of points belong.  This could be a set
+    # of random points we want to associate with the same regions
+
+    labels=km.find_nearest(X2)
+
+    # you can save the centers and load them into a KMeans
+    # object at a later time
+    km=KMeans(centers)
+    labels=km.find_nearest(X)
     """
     def __init__(self, centers,
                  tol=_TOL_DEF,
