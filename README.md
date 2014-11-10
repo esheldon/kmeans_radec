@@ -18,6 +18,7 @@ from kmeans_radec import KMeans, kmeans_sample
 ncen = 40
 
 # the data X has shape [Npoints, ra, dec]
+# run no more than 100 iterations. Will stop if tolerance is met
 km = kmeans_sample(X, ncen, maxiter=100, tol=1.0e-5)
 
 # we got back a KMeans object:
