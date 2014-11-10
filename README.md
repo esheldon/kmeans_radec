@@ -49,26 +49,23 @@ km=KMeans(cen_guess)
 km.run(X, maxiter=100)
 
 # did it converge?
-if km.converged:
-    print("k means converged to :",km.centers)
+if not km.converged:
+    # did not converge.  This might be ok, but if we want
+    # to run more we can
+    km.run(maxiter=maxiter)
 
-    # find nearest centers to a *different* set of points
-    labels=km.find_nearest(X2)
-
-    # equivalent to 
-    labels=kmeans_radec.find_nearest(X2, km.centers)
-
-else:
-
-    # no convergence, we could just run more
-    #     km.run(maxiter=maxiter)
     # or we could try a different set of center guesses...
-
-    print("k means did not converge, trying different guesses")
-
     km.set_centers(cen_guess2)
     km.run(X, maxiter=100)
-    # ... etc.
+
+# once we have our centers, we can find which cluster 
+# a *different* set of points belongs, for example a set
+# of random points
+
+labels=km.find_nearest(X2)
+
+# the above is equivalent to the simple function call
+labels=kmeans_radec.find_nearest(X2, km.centers)
 ```
 
 dependencies
