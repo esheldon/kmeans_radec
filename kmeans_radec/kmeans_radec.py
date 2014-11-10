@@ -49,7 +49,7 @@ class KMeans(object):
     import kmeans_radec
     from kmeans_radec import KMeans
 
-    cen_guess=numpy.zeros(ncen, 2)
+    cen_guess=numpy.zeros( (ncen, 2) )
     cen_guess[:,0] = ra_guesses
     cen_guess[:,1] = dec_guesses
     km=KMeans(cen_guess)
