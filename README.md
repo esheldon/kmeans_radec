@@ -42,7 +42,7 @@ print("shape of distances:",km.distances.shape)
 # start with our own guess
 #
 
-cen_guess=numpy.zeros(ncen, 2)
+cen_guess=numpy.zeros( (ncen, 2) )
 cen_guess[:,0] = ra_guesses
 cen_guess[:,1] = dec_guesses
 km=KMeans(cen_guess)
