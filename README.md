@@ -7,6 +7,8 @@ examples
 --------
 
 ```python
+# In the following, the data array X has shape [Npoints, ra, dec]
+
 import kmeans_radec
 from kmeans_radec import KMeans, kmeans_sample
 
@@ -14,8 +16,6 @@ from kmeans_radec import KMeans, kmeans_sample
 # an initial set of guesses for the centers by sampling
 # randomly from the data set
 
-
-# the data X has shape [Npoints, ra, dec]
 # run no more than 100 iterations. Will stop if tolerance is met
 ncen = 40
 km = kmeans_sample(X, ncen, maxiter=100, tol=1.0e-5)
