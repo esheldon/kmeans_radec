@@ -54,7 +54,7 @@ km.run(X, maxiter=100)
 if not km.converged:
     # did not converge.  This might be ok, but if we want
     # to run more we can
-    km.run(maxiter=maxiter)
+    km.run(X, maxiter=maxiter)
 
     # or we could try a different set of center guesses...
     km.set_centers(cen_guess2)
