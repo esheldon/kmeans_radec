@@ -11,14 +11,13 @@ import kmeans_radec
 from kmeans_radec import KMeans, kmeans_sample
 
 # first lets try an easy example, letting the code generate
-# an initial set of guesses for the centers
+# an initial set of guesses for the centers by sampling
+# randomly from the data set
 
-
-# find 40 centers
-ncen = 40
 
 # the data X has shape [Npoints, ra, dec]
 # run no more than 100 iterations. Will stop if tolerance is met
+ncen = 40
 km = kmeans_sample(X, ncen, maxiter=100, tol=1.0e-5)
 
 # we got back a KMeans object:
