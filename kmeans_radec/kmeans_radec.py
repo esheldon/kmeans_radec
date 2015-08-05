@@ -23,7 +23,10 @@ class KMeans(object):
     parameters
     ----------
     centers_guess: array
-        [ncen, ra, dec] starting guesses.  Can reset later with set_centers()
+        [ncen, 2] starting guesses, where the two dimensions are ra and dec
+        respectively.  e.g. ra centers are centers_guess[:,0] and the dec
+        centers are centers_guess[:,1].
+        Can reset later with set_centers()
     tol: float, optional
         The relative change in the average distance to
         centers, signifies convergence
@@ -38,7 +41,7 @@ class KMeans(object):
     .centers: array
         the found centers
     .labels: array
-        [N,ra,dec] array
+        [N] array of labels
     .distances: array
         Distance from each point to each center
     .X: array
@@ -97,7 +100,7 @@ class KMeans(object):
         parameters
         ----------
         X: array
-            [N, ra, dec] array
+            [N, 2] array for ra,dec points
         maxiter: int, optional
             Max number of iterations to run.
         """
@@ -157,7 +160,7 @@ class KMeans(object):
         parameters
         ----------
         centers: array
-            [Ncen] array of centers
+            [Ncen,2] array of centers ra,dec
         """
         centers=numpy.asanyarray(centers)
 
@@ -210,9 +213,10 @@ def kmeans(X, centers_guess,
     parameters
     ----------
     X: array
-        [N, ra, dec] array
+        [N, 2] array where the two dimensions represent ra,dec
+        for each point
     centers_guess: array
-        [ncen, ra, dec] array.  The center guesses.
+        [ncen, 2] array of guesses.  The center guesses.
     tol: float, optional
         The relative change in the average distance to
         centers, signifies convergence
@@ -250,7 +254,7 @@ def kmeans_sample(X, ncen, nsample=None, maxiter=_MAXITER_DEF, **kw ):
     parameters
     ----------
     X: array
-        [N, ra, dec] array
+        [N, 2] array of ra,dec points
     ncen: int
         Number of centers
     nsample: int, optional
@@ -303,7 +307,7 @@ def cdist_radec(a1, a2):
     """
     use broadcasting to get all distance pairs
 
-    a represents [N,ra,dec]
+    a represents [N,2] for ra,dec points
     """
     from numpy import cos, sin, arccos, newaxis, deg2rad
 
@@ -351,9 +355,9 @@ def find_nearest( X, centers):
     parameters
     ----------
     X: array
-        [N,ra,dec] points
+        [N,2] points array of ra,dec points
     centers: array
-        [ncen,ra,dec] center points
+        [ncen,2] center points
 
     returns
     -------
