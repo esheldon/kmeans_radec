@@ -11,8 +11,6 @@ from __future__ import division
 
 import random
 import numpy
-from numpy import deg2rad, rad2deg, pi, sin, cos, arccos, arctan2
-from numpy import newaxis
 
 _TOL_DEF=1.0e-5
 _MAXITER_DEF=100
@@ -141,7 +139,7 @@ class KMeans(object):
             for jc in range(ncen):  # (1 pass in C)
                 c, = numpy.where( labels == jc )
                 if len(c) > 0:
-                    centers[jc] = get_mean_center(X[c,0],X[c,1])
+                    centers[jc] = X[c].mean( axis=0 )
 
         if self.verbose:
             print(jiter,"iterations  cluster "
@@ -311,6 +309,7 @@ def cdist_radec(a1, a2):
 
     a represents [N,2] for ra,dec points
     """
+    from numpy import cos, sin, arccos, newaxis, deg2rad
 
     ra1=a1[:,0]
     dec1=a1[:,1]
@@ -380,56 +379,5 @@ def _check_dims(X, centers):
         tup=(X.shape, centers.shape )
         raise ValueError("X %s and centers %s must have the same "
                          "number of columns" % tup)
-
-def get_mean_center(ra, dec):
-    """
-    parameters
-    ----------
-    ra: array
-    dec: array
-        
-    returns
-    -------
-    ramean, decmean
-    """
-
-    x,y,z = radec2xyz(ra, dec)
-
-    xmean = x.mean()
-    ymean = y.mean()
-    zmean = z.mean()
-
-    thetamean = arccos(zmean) 
-    phimean = arctan2(ymean, xmean)
-
-    ramean = rad2deg(phimean)
-    decmean = rad2deg(pi/2.0 - thetamean)
-
-    ramean = atbound1(ramean, 0.0, 360.0)
-
-    return ramean, decmean
-
-def radec2xyz(ra, dec):
-    phi = deg2rad(ra)
-    theta = pi/2.0 - deg2rad(dec)
-
-    sintheta = sin(theta)
-    x = sintheta * cos(phi)
-    y = sintheta * sin(phi)
-    z = cos(theta)
-
-    return x,y,z
-
-
-def atbound1(longitude_in, minval, maxval):
-
-    longitude = longitude_in
-    while longitude < minval:
-        longitude += 360.0
-
-    while longitude > maxval:
-        longitude -= 360.0
-
-    return longitude
 
 
