@@ -124,5 +124,5 @@ def plot_centers(centers, ax, x_min=0, x_max=360, y_min=-180, y_max=180, h=1):
 
 
 if __name__=="__main__":
-    main()
+    test()
 
