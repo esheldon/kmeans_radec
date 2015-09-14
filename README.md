@@ -75,6 +75,15 @@ labels=km.find_nearest(X)
 labels=kmeans_radec.find_nearest(X, centers)
 ```
 
+tests
+-----
+```python
+# requires matplotlib
+import kmeans_radec
+kmeans_radec.test.test()
+```
+
+
 installation
 ------------
 ```
