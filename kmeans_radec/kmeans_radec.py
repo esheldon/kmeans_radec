@@ -11,8 +11,7 @@ from __future__ import division
 
 import random
 import numpy
-from numpy import deg2rad, rad2deg, pi, sin, cos, arccos, arctan2
-from numpy import newaxis
+from numpy import deg2rad, rad2deg, pi, sin, cos, arccos, arctan2, newaxis, sqrt
 
 _TOL_DEF=1.0e-5
 _MAXITER_DEF=100
@@ -116,6 +115,8 @@ class KMeans(object):
             tup=(X.shape, centers.shape, self.tol, maxiter)
             print("X %s  centers %s  tol=%.2g  maxiter=%d" % tup)
 
+        Xx, Xy, Xz = radec2xyz(X[:,0], X[:,1])
+
         self.converged=False
         allx = numpy.arange(N)
         prevdist = 0
@@ -141,7 +142,7 @@ class KMeans(object):
             for jc in range(ncen):  # (1 pass in C)
                 c, = numpy.where( labels == jc )
                 if len(c) > 0:
-                    centers[jc] = get_mean_center(X[c,0],X[c,1])
+                    centers[jc] = get_mean_center(Xx[c], Xy[c], Xz[c])
 
         if self.verbose:
             print(jiter,"iterations  cluster "
@@ -381,25 +382,26 @@ def _check_dims(X, centers):
         raise ValueError("X %s and centers %s must have the same "
                          "number of columns" % tup)
 
-def get_mean_center(ra, dec):
+def get_mean_center(x, y, z):
     """
     parameters
     ----------
-    ra: array
-    dec: array
+    x: array
+    y: array
+    z: array
         
     returns
     -------
     ramean, decmean
     """
 
-    x,y,z = radec2xyz(ra, dec)
-
     xmean = x.mean()
     ymean = y.mean()
     zmean = z.mean()
 
-    thetamean = arccos(zmean) 
+    rmean = sqrt(xmean ** 2 + ymean ** 2 + zmean ** 2)
+
+    thetamean = arccos(zmean / rmean) 
     phimean = arctan2(ymean, xmean)
 
     ramean = rad2deg(phimean)
