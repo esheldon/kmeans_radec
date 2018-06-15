@@ -6,16 +6,24 @@ Adapted from this stack overflow answer
 http://stackoverflow.com/questions/5529625/is-it-possible-to-specify-your-own-distance-function-using-scikit-learn-k-means
 
 """
-from __future__ import print_function
-from __future__ import division
+from __future__ import print_function, division
 try:
     xrange
 except:
     xrange=range
 
 import random
-import numpy
-from numpy import deg2rad, rad2deg, pi, sin, cos, arccos, arctan2, newaxis, sqrt
+import numpy as np
+from numpy import (
+    deg2rad, rad2deg, pi, sin, cos,
+    arccos, arctan2, newaxis, sqrt,
+)
+
+try:
+    from numba import njit
+    have_numba=True
+except ImportError:
+    have_numba=False
 
 _TOL_DEF=1.0e-5
 _MAXITER_DEF=100
@@ -90,9 +98,11 @@ class KMeans(object):
     """
     def __init__(self, centers,
                  tol=_TOL_DEF,
-                 verbose=_VERBOSE_DEF):
+                 verbose=_VERBOSE_DEF,
+                 method='slow'):
 
         self.set_centers(centers)
+        self.set_method(method)
 
         self.tol=float(tol)
         self.verbose=verbose
@@ -109,6 +119,13 @@ class KMeans(object):
         maxiter: int, optional
             Max number of iterations to run.
         """
+
+        if self.method=='slow':
+            self._run_slow(X, maxiter)
+        else:
+            self._run_fast(X, maxiter)
+
+    def _run_slow(self, X, maxiter):
         centers=self.get_centers()
         _check_dims(X, self.centers)
 
@@ -122,7 +139,7 @@ class KMeans(object):
         Xx, Xy, Xz = radec2xyz(X[:,0], X[:,1])
 
         self.converged=False
-        allx = numpy.arange(N)
+        allx = np.arange(N)
         prevdist = 0
         for jiter in xrange( 1, maxiter+1 ):
 
@@ -144,13 +161,13 @@ class KMeans(object):
 
             prevdist = avdist
             for jc in range(ncen):  # (1 pass in C)
-                c, = numpy.where( labels == jc )
+                c, = np.where( labels == jc )
                 if len(c) > 0:
                     centers[jc] = get_mean_center(Xx[c], Xy[c], Xz[c])
 
         if self.verbose:
             print(jiter,"iterations  cluster "
-                  "sizes:", numpy.bincount(labels))
+                  "sizes:", np.bincount(labels))
         if self.verbose >= 2:
             self._print_info()
 
@@ -159,6 +176,79 @@ class KMeans(object):
         self.labels=labels
         self.distances=distances
 
+    def _run_fast(self, X, maxiter):
+        centers=self.get_centers()
+        _check_dims(X, self.centers)
+
+        N, dim = X.shape
+        ncen, cdim = centers.shape
+
+        D = np.zeros( (N, ncen) )
+
+        if self.verbose:
+            tup=(X.shape, centers.shape, self.tol, maxiter)
+            print("X %s  centers %s  tol=%.2g  maxiter=%d" % tup)
+
+        Xx, Xy, Xz = radec2xyz(X[:,0], X[:,1])
+
+        self.converged=False
+        allx = np.arange(N)
+        prevdist = 0
+        for jiter in xrange( 1, maxiter+1 ):
+
+            Cx, Cy, Cz = radec2xyz(centers[:,0], centers[:,1])
+
+            self._cdist_nb(Xx, Xy, Xz, Cx, Cy, Cz, D)
+
+            labels = D.argmax(axis=1)  # X -> nearest centre
+
+            distances = D[allx,labels]
+            avdist = distances.mean()  # median ?
+            if self.verbose >= 2:
+                print("    av |X - nearest centre| = %.4g" % avdist)
+
+            avdist = avdist.clip(min=-1.0, max=1.0)
+            avdist = np.arccos(avdist)
+            
+            self.converged = (1 - self.tol) * prevdist <= avdist <= prevdist
+            if self.converged:
+                break
+
+            if  jiter==maxiter:
+                break
+
+            prevdist = avdist
+            for jc in range(ncen):  # (1 pass in C)
+                c, = np.where( labels == jc )
+                if len(c) > 0:
+                    centers[jc] = get_mean_center(Xx[c], Xy[c], Xz[c])
+
+        if self.verbose:
+            print(jiter,"iterations  cluster "
+                  "sizes:", np.bincount(labels))
+        if self.verbose >= 2:
+            self._print_info()
+
+        self.X=X
+        self.centers=centers
+        self.labels=labels
+        self.distances=distances
+
+
+    def set_method(self, method):
+        """
+        set the method for matching
+
+        should be 'slow' or 'fast'
+        """
+        assert method in ['fast','slow'],\
+                "method should be 'fast' or 'slow'"
+        if method=='fast':
+            assert have_numba,\
+                "you need numba installed to use method='fast'"
+            self._cdist_nb = njit(_cdist_nb)
+
+        self.method=method
 
     def set_centers(self, centers):
         """
@@ -169,7 +259,7 @@ class KMeans(object):
         centers: array
             [Ncen,2] array of centers ra,dec
         """
-        centers=numpy.asanyarray(centers)
+        centers=np.asanyarray(centers)
 
         # we won't change this
         self.centers_guess=centers.copy()
@@ -196,8 +286,8 @@ class KMeans(object):
 
     def _print_info(self):
         ncen=self.centers.size
-        r50 = numpy.zeros(ncen)
-        r90 = numpy.zeros(ncen)
+        r50 = np.zeros(ncen)
+        r90 = np.zeros(ncen)
 
         distances=self.distances
         labels=self.labels
@@ -205,7 +295,7 @@ class KMeans(object):
         for j in range(ncen):
             dist = distances[ labels == j ]
             if len(dist) > 0:
-                r50[j], r90[j] = numpy.percentile( dist, (50, 90) )
+                r50[j], r90[j] = np.percentile( dist, (50, 90) )
         print("kmeans: cluster 50 % radius", r50.astype(int))
         print("kmeans: cluster 90 % radius", r90.astype(int))
             # scale L1 / dim, L2 / sqrt(dim) ?
@@ -290,7 +380,7 @@ def kmeans_sample(X, ncen, nsample=None, maxiter=_MAXITER_DEF, **kw ):
 
     N, dim = X.shape
     if nsample is None:
-        nsample = max( 2*numpy.sqrt(N), 10*ncen )
+        nsample = max( 2*np.sqrt(N), 10*ncen )
 
     # smaller random sample to start with
     Xsample = random_sample( X, int(nsample) )
@@ -309,7 +399,16 @@ def kmeans_sample(X, ncen, nsample=None, maxiter=_MAXITER_DEF, **kw ):
     
     return km
 
-_PIOVER2=numpy.pi*0.5
+def _cdist_nb(x1, y1, z1, x2, y2, z2, theta):
+
+    N1 = x1.shape[0]
+    N2 = x2.shape[0]
+    for i1 in xrange(N1):
+        for i2 in xrange(N2):
+            costheta = x1[i1]*x2[i2] + y1[i1]*y2[i2] + z1[i1]*z2[i2]
+            theta[i1,i2] = costheta
+
+_PIOVER2=np.pi*0.5
 def cdist_radec(a1, a2):
     """
     use broadcasting to get all distance pairs
@@ -342,9 +441,15 @@ def cdist_radec(a1, a2):
 
     costheta = x1*x2 + y1*y2 + z1*z2
 
-    costheta=numpy.clip(costheta,-1.0,1.0)
+    costheta=np.clip(costheta,-1.0,1.0)
     theta = arccos(costheta)
     return theta
+
+def get_thetaphi(ra, dec):
+    phi = deg2rad(ra)
+    theta = _PIOVER2 - deg2rad(dec)
+    return theta, phi
+
 
 
 def random_sample( X, n ):
@@ -417,7 +522,7 @@ def get_mean_center(x, y, z):
 
 def radec2xyz(ra, dec):
     phi = deg2rad(ra)
-    theta = pi/2.0 - deg2rad(dec)
+    theta = _PIOVER2 - deg2rad(dec)
 
     sintheta = sin(theta)
     x = sintheta * cos(phi)
