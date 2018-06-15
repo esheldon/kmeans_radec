@@ -46,6 +46,9 @@ class KMeans(object):
     verbose: int, optional
         How verbose.  0 silent, 1 minimal starting info, 2 prints running
         distances
+    method: string, optional
+        method='fast' will use numba to accelerate the code.  Default
+        is method='slow'
 
     attributes after running
     ------------------------
