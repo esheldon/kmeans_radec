@@ -8,6 +8,10 @@ http://stackoverflow.com/questions/5529625/is-it-possible-to-specify-your-own-di
 """
 from __future__ import print_function
 from __future__ import division
+try:
+    xrange
+except:
+    xrange=range
 
 import random
 import numpy
