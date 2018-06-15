@@ -73,6 +73,13 @@ labels=km.find_nearest(X)
 
 # the above is equivalent to the simple function call
 labels=kmeans_radec.find_nearest(X, centers)
+
+
+# Fast version
+# if you have numba installed, you can run a faster
+# version
+km=KMeans(cen_guess, method='fast')
+km.run(X, maxiter=100)
 ```
 
 tests
