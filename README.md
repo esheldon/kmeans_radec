@@ -90,6 +90,7 @@ import kmeans_radec
 kmeans_radec.test.test()
 ```
 
+![Kmeans Regions](data/kmeans-example.png?raw=true "Example kmeans regions from Dark Energy Survey data")
 
 installation
 ------------
