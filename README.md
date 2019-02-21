@@ -82,6 +82,14 @@ km=KMeans(cen_guess, method='fast')
 km.run(X, maxiter=100)
 ```
 
+Example from real data
+-----------------------
+
+This example is real kmeans regions generated for
+object positions in the  Dark Energy Survey (https://arxiv.org/abs//1604.07871)
+
+![Kmeans Regions](data/kmeans-example.png?raw=true "Example kmeans regions from Dark Energy Survey data")
+
 tests
 -----
 ```python
@@ -90,7 +98,6 @@ import kmeans_radec
 kmeans_radec.test.test()
 ```
 
-![Kmeans Regions](data/kmeans-example.png?raw=true "Example kmeans regions from Dark Energy Survey data")
 
 installation
 ------------
