@@ -2,10 +2,12 @@
 Converted from Chis Davis' ipython notebook
 """
 
+from __future__ import print_function
 from .kmeans_radec import kmeans_sample, KMeans
+import time
 import numpy
 
-def test():
+def test(method='slow', N=10000, ncen=10):
     from matplotlib.pyplot import draw, figure, show
 
     # first sample points that do not cross over ra=360
@@ -13,9 +15,7 @@ def test():
     maxra = 70
     mindec = -10
     maxdec = 10
-    N = 10000
     raoffset = 0
-    ncen = 10
     h = 0.1
 
     fig1 = figure()
@@ -27,7 +27,13 @@ def test():
     ax1.set_ylabel('dec')
 
     X = numpy.vstack((ra, dec)).T
-    km = kmeans_sample(X, ncen)
+
+    for i in range(2):
+        tm0 = time.time()
+        km = kmeans_sample(X, ncen, method=method)
+        tm = time.time()-tm0
+    print('time:',time.time()-tm0)
+
     plot_centers(km.centers, ax1,
                  x_min=minra, x_max=maxra, y_min=mindec, y_max=maxdec, h=h)
     draw()
@@ -40,9 +46,7 @@ def test():
     maxra = 370
     mindec = -10
     maxdec = 10
-    N = 10000
     raoffset = -180
-    ncen = 10
     h = 0.1
 
     phimin = (minra - 180 + raoffset)
@@ -59,7 +63,11 @@ def test():
     ax2.set_ylabel('dec')
 
     X = numpy.vstack((ra, dec)).T
-    km = kmeans_sample(X, ncen)
+
+    tm0 = time.time()
+    km = kmeans_sample(X, ncen, method=method)
+    print('time:',time.time()-tm0)
+
     plot_centers(km.centers, ax2,
                  x_min=0, x_max=360, y_min=mindec, y_max=maxdec, h=10 * h)
     draw()
