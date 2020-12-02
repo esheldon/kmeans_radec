@@ -1,6 +1,4 @@
 from distutils.core import setup
-import os
-import numpy
 
 setup(name="kmeans_radec", 
       url="https://github.com/esheldon/kmeans_radec",
@@ -10,4 +8,3 @@ setup(name="kmeans_radec",
       author_email="erin.sheldon@gmail.com",
       install_requires=['numpy'],
       version="0.1")
-
