@@ -7,7 +7,8 @@ examples
 --------
 
 ```python
-# In the following, the data array X has shape [Npoints, ra, dec]
+# In the following, the data array X has shape (Npoints, 2),
+# where X[:, 0] is ra and X[:, 1] is dec
 
 import kmeans_radec
 from kmeans_radec import KMeans, kmeans_sample
